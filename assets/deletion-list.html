@@ -182,7 +182,7 @@
             paths: inputs.filter((input) => input.checked).map((input) => input.value)
           };
           await window.openai.sendFollowUpMessage({
-            prompt: "执行项目文件清理工作流第 7 步，删除以下已勾选路径，并将删除结果输出到当前聊天：\n" + JSON.stringify(selection, null, 2),
+            prompt: "执行项目文件清理工作流第 7 步，仅将以下已勾选路径移入系统废纸篓，保留恢复能力；无法移入则停止该项，不得永久删除或自动清空废纸篓。将操作结果输出到当前聊天：\n" + JSON.stringify(selection, null, 2),
             title: "提交"
           });
         });
