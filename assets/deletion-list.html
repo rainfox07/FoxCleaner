@@ -1,0 +1,192 @@
+<div id="file-cleaner-list" data-submit-mode="chat">
+  <style>
+    #file-cleaner-list {
+      color-scheme: light dark;
+      --page: light-dark(#f3f4f7, #141519);
+      --surface: light-dark(#ffffff, #202126);
+      --text: light-dark(#232630, #f0f1f5);
+      --muted: light-dark(#62697a, #bdc2d0);
+      --line: light-dark(#e9eaf0, #35363e);
+      --row: light-dark(#f8f9fb, #26272e);
+      --accent: light-dark(#5966d9, #a2abff);
+      --selected: light-dark(#f0f2ff, #2c3049);
+      --columns: 16px minmax(0, 1.2fr) minmax(0, 1fr);
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    #file-cleaner-list[data-submit-mode="preview"] {
+      min-height: 100svh;
+      background: radial-gradient(ellipse at 50% 15%, light-dark(#e8ebf7, #202232), transparent 65%), var(--page);
+    }
+    #file-cleaner-list, #file-cleaner-list * { box-sizing: border-box; }
+    #file-cleaner-list form {
+      width: min(100%, 720px);
+      padding: 24px;
+      border: 1px solid light-dark(#ffffff, #303139);
+      border-radius: 22px;
+      background: var(--surface);
+      box-shadow: 0 16px 48px light-dark(#252b4610, #00000030), 0 2px 6px light-dark(#252b4605, #00000015);
+    }
+    #file-cleaner-list h1 {
+      margin: 0 0 18px;
+      font-size: 18px;
+      font-weight: 600;
+      letter-spacing: -.5px;
+    }
+    #file-cleaner-list label {
+      display: grid;
+      grid-template-columns: var(--columns);
+      align-items: center;
+      gap: 12px;
+      min-height: 48px;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--row);
+      font-size: 14px;
+      line-height: 1.5;
+      transition: background .16s ease, border-color .16s ease;
+    }
+    #file-cleaner-list label + label { margin-top: 8px; }
+    #file-cleaner-list label:hover { border-color: light-dark(#c8cde4, #555c7a); }
+    #file-cleaner-list label:has(input:checked) {
+      background: var(--selected);
+      border-color: var(--accent);
+    }
+    #file-cleaner-list .list-header {
+      display: grid;
+      grid-template-columns: var(--columns);
+      align-items: center;
+      gap: 12px;
+      padding: 0 12px;
+      margin-bottom: 8px;
+    }
+    #file-cleaner-list .explanation-heading {
+      grid-column: 3;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 500;
+    }
+    #file-cleaner-list .select-all {
+      grid-column: 1 / 3;
+      display: flex;
+      min-height: 44px;
+      margin: 0;
+      padding: 0;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      font-size: 13px;
+    }
+    #file-cleaner-list .select-all:has(input:checked) { background: transparent; }
+    #file-cleaner-list input {
+      flex: 0 0 16px;
+      width: 16px;
+      height: 16px;
+      margin: 0;
+      accent-color: var(--accent);
+    }
+    #file-cleaner-list label span { min-width: 0; overflow-wrap: anywhere; }
+    #file-cleaner-list .file-explanation {
+      color: var(--muted);
+      font-size: 13px;
+    }
+    #file-cleaner-list button {
+      width: 100%;
+      margin-top: 20px;
+      min-height: 44px;
+      padding: 10px 30px;
+      border: 0;
+      border-radius: 12px;
+      background: light-dark(#282d3d, #e7e9f5);
+      color: light-dark(#ffffff, #202331);
+      font: inherit;
+      font-size: 14px;
+      font-weight: 500;
+      box-shadow: 0 3px 8px light-dark(#252b4618, #00000020);
+      transition: background .16s ease, transform .16s ease, box-shadow .16s ease;
+    }
+    #file-cleaner-list button:hover {
+      background: light-dark(#3b4259, #ffffff);
+      box-shadow: 0 5px 14px light-dark(#252b4625, #00000030);
+    }
+    #file-cleaner-list button:active { transform: translateY(1px); }
+    #file-cleaner-list input:focus-visible, #file-cleaner-list button:focus-visible {
+      outline: 3px solid var(--accent);
+      outline-offset: 4px;
+    }
+    #file-cleaner-list[data-submit-mode="preview"] label,
+    #file-cleaner-list[data-submit-mode="preview"] input,
+    #file-cleaner-list[data-submit-mode="preview"] button { cursor: pointer; }
+    @media (max-width: 420px) {
+      #file-cleaner-list { padding: 12px; }
+      #file-cleaner-list form { padding: 18px 14px; }
+      #file-cleaner-list label, #file-cleaner-list .list-header { column-gap: 10px; }
+    }
+    @media (prefers-reduced-motion: reduce) { #file-cleaner-list label, #file-cleaner-list button { transition: none; } }
+  </style>
+  <form method="get" autocomplete="off">
+    <h1>删除清单：</h1>
+    <div class="list-header">
+      <label class="select-all cursor-interaction"><input class="cursor-interaction" type="checkbox" data-select-all><span>全选</span></label>
+      <span class="explanation-heading">解释</span>
+    </div>
+    <div data-items></div>
+    <button class="cursor-interaction" type="submit">提交</button>
+  </form>
+  <script type="application/json" id="deletion-list-data">{"project":"","archived":false,"items":[]}</script>
+  <script>
+    (() => {
+      const root = document.getElementById("file-cleaner-list");
+      const form = root.querySelector("form");
+      const container = root.querySelector("[data-items]");
+      const all = root.querySelector("[data-select-all]");
+      const data = JSON.parse(root.querySelector("#deletion-list-data").textContent);
+      const inputs = data.items.map((item) => {
+        const label = document.createElement("label");
+        label.className = "cursor-interaction";
+        const input = document.createElement("input");
+        input.className = "cursor-interaction";
+        input.type = "checkbox";
+        input.name = "path";
+        input.value = item.path;
+        input.checked = false;
+        const text = document.createElement("span");
+        text.className = "file-path";
+        text.textContent = item.label;
+        const explanation = document.createElement("span");
+        explanation.className = "file-explanation";
+        explanation.textContent = item.explanation ?? "";
+        label.append(input, text, explanation);
+        container.append(label);
+        return input;
+      });
+      all.addEventListener("change", () => {
+        inputs.forEach((input) => { input.checked = all.checked; });
+      });
+      container.addEventListener("change", () => {
+        const selected = inputs.filter((input) => input.checked).length;
+        all.checked = inputs.length > 0 && selected === inputs.length;
+        all.indeterminate = selected > 0 && selected < inputs.length;
+      });
+      if (root.dataset.submitMode === "chat") {
+        form.addEventListener("submit", async (event) => {
+          event.preventDefault();
+          const selection = {
+            project: data.project,
+            archived: data.archived,
+            paths: inputs.filter((input) => input.checked).map((input) => input.value)
+          };
+          await window.openai.sendFollowUpMessage({
+            prompt: "执行项目文件清理工作流第 7 步，删除以下已勾选路径，并将删除结果输出到当前聊天：\n" + JSON.stringify(selection, null, 2),
+            title: "提交"
+          });
+        });
+      }
+    })();
+  </script>
+</div>

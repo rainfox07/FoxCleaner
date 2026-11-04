@@ -1,0 +1,13 @@
+---
+name: file-cleaner
+description: 按项目文件清理工作流检查重复文件、旧版本、临时文件、相似图片及工具缓存，提供 archived 模式和 HTML 勾选删除清单。用于用户要求检查或清理项目目录时。
+---
+
+# File Cleaner
+
+读取并执行 [WORKFLOW.md](WORKFLOW.md) 中的八步工作流。
+
+- 使用用户指定的项目目录；未指定时使用当前项目目录。
+- 第 6 步使用内置的 [HTML 前端模板](assets/deletion-list.html)，在当前聊天中呈现删除清单。
+- 收到前端提交的勾选结果后，从第 7 步继续执行。
+- 删除结果直接输出到当前聊天。
